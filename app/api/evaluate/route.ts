@@ -1,7 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { CASES } from "@/lib/cases";
 
-const client = new Anthropic();
+const client = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+const REQUEST_OPTIONS = { apiVersion: "v1" };
 
 export async function POST(request: Request) {
   const { caseId, conversation, evaluationType, mseContent } = await request.json();
@@ -29,17 +30,15 @@ export async function POST(request: Request) {
     prompt = `다음은 간호학생과 정신과 환자의 대화입니다:\n\n${conversationText}\n\n위 대화에서 학생이 근육주사(IM) 투여 과정에서 수행한 언어적·비언어적 간호행위의 적절성을 평가해주세요. 다음 항목을 포함하여 평가하세요:\n1. 주사 전 환자 설명 및 동의 절차\n2. 환자의 불안·저항 관리를 위한 언어적 접근\n3. 학생이 보고한 비언어적 간호행위 (안전한 자세, 접근 방식, 억제 방법 등)\n4. 주사 후 모니터링 및 상태 확인 안내\n5. 잘한 점\n6. 개선이 필요한 부분`;
   }
 
-  const stream = await client.messages.stream({
-    model: "claude-sonnet-4-6",
-    max_tokens: 2048,
-    messages: [{ role: "user", content: prompt }],
-  });
+  const model = client.getGenerativeModel({ model: "gemini-1.5-flash" }, REQUEST_OPTIONS);
+  const result = await model.generateContentStream(prompt);
 
   const readable = new ReadableStream({
     async start(controller) {
-      for await (const chunk of stream) {
-        if (chunk.type === "content_block_delta" && chunk.delta.type === "text_delta") {
-          controller.enqueue(new TextEncoder().encode(chunk.delta.text));
+      for await (const chunk of result.stream) {
+        const text = chunk.text();
+        if (text) {
+          controller.enqueue(new TextEncoder().encode(text));
         }
       }
       controller.close();
