@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     return Response.json({ error: "케이스를 찾을 수 없습니다" }, { status: 404 });
   }
 
-  const model = client.getGenerativeModel({ model: "gemini-1.5-flash" }, REQUEST_OPTIONS);
+  const model = client.getGenerativeModel({ model: "gemini-2.0-flash" }, REQUEST_OPTIONS);
 
   // Prepend system prompt as first exchange in history
   const systemHistory = [
