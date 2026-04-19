@@ -4,6 +4,7 @@ import { useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { CASES } from "@/lib/cases";
 import { supabase } from "@/lib/supabase";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -158,8 +159,21 @@ function EvaluateContent() {
                   <div className="text-gray-400 text-sm animate-pulse">평가 중...</div>
                 )}
                 {evaluationResults[type] && (
-                  <div className="text-sm text-gray-700 whitespace-pre-wrap leading-relaxed">
-                    {evaluationResults[type]}
+                  <div className="text-sm text-gray-700 leading-relaxed prose prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        h1: ({ children }) => <h1 className="text-base font-bold mt-4 mb-2">{children}</h1>,
+                        h2: ({ children }) => <h2 className="text-base font-bold mt-4 mb-2">{children}</h2>,
+                        h3: ({ children }) => <h3 className="text-sm font-bold mt-3 mb-1">{children}</h3>,
+                        strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                        ol: ({ children }) => <ol className="list-decimal list-outside ml-5 space-y-2 my-2">{children}</ol>,
+                        ul: ({ children }) => <ul className="list-disc list-outside ml-5 space-y-1 my-2">{children}</ul>,
+                        li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                        p: ({ children }) => <p className="my-1">{children}</p>,
+                      }}
+                    >
+                      {evaluationResults[type]}
+                    </ReactMarkdown>
                   </div>
                 )}
               </div>
