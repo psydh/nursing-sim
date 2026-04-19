@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { CASES } from "@/lib/cases";
+import { supabase } from "@/lib/supabase";
 
 interface Message {
   role: "user" | "assistant";
@@ -20,6 +21,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
   const [error, setError] = useState("");
+  const startedAt = useRef<string>(new Date().toISOString());
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -84,10 +86,27 @@ export default function ChatPage() {
     await streamResponse(updatedMessages);
   }
 
-  function endSession() {
+  async function endSession() {
     setSessionEnded(true);
     const sessionKey = `session_${caseId}_${Date.now()}`;
     localStorage.setItem(sessionKey, JSON.stringify(messages));
+
+    const studentInfo = JSON.parse(localStorage.getItem("student_info") || "{}");
+    const { data } = await supabase
+      .from("sessions")
+      .insert({
+        student_id: studentInfo.student_id || "unknown",
+        student_name: studentInfo.student_name || "unknown",
+        case_id: caseId,
+        conversation: messages,
+        started_at: startedAt.current,
+        ended_at: new Date().toISOString(),
+      })
+      .select("id")
+      .single();
+
+    const sessionId = data?.id || null;
+    localStorage.setItem(`${sessionKey}_supabase_id`, sessionId || "");
     router.push(`/evaluate/${caseId}?sessionKey=${sessionKey}`);
   }
 

@@ -3,6 +3,7 @@
 import { useState, Suspense } from "react";
 import { useParams, useSearchParams, useRouter } from "next/navigation";
 import { CASES } from "@/lib/cases";
+import { supabase } from "@/lib/supabase";
 
 interface Message {
   role: "user" | "assistant";
@@ -42,28 +43,37 @@ function EvaluateContent() {
     setLoadingEval((prev) => ({ ...prev, [type]: true }));
     setEvaluationResults((prev) => ({ ...prev, [type]: "" }));
 
+    const mseContent = type === "mse" ? Object.entries(mseData).map(([k, v]) => `${k}: ${v}`).join("\n") : undefined;
+
     const res = await fetch("/api/evaluate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        caseId,
-        conversation: messages,
-        evaluationType: type,
-        mseContent: type === "mse" ? Object.entries(mseData).map(([k, v]) => `${k}: ${v}`).join("\n") : undefined,
-      }),
+      body: JSON.stringify({ caseId, conversation: messages, evaluationType: type, mseContent }),
     });
 
     const reader = res.body!.getReader();
     const decoder = new TextDecoder();
+    let fullResult = "";
 
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
       const text = decoder.decode(value);
+      fullResult += text;
       setEvaluationResults((prev) => ({ ...prev, [type]: (prev[type] || "") + text }));
     }
 
     setLoadingEval((prev) => ({ ...prev, [type]: false }));
+
+    const sessionId = sessionKey ? localStorage.getItem(`${sessionKey}_supabase_id`) : null;
+    if (sessionId) {
+      await supabase.from("evaluations").insert({
+        session_id: sessionId,
+        evaluation_type: type,
+        mse_content: mseContent || null,
+        result_text: fullResult,
+      });
+    }
   }
 
   async function startEvaluation() {

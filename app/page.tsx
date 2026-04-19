@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
 const CASES = [
   {
@@ -47,6 +48,78 @@ const headerColorMap: Record<string, string> = {
 
 export default function Home() {
   const router = useRouter();
+  const [studentId, setStudentId] = useState("");
+  const [studentName, setStudentName] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const stored = localStorage.getItem("student_info");
+    if (stored) {
+      const info = JSON.parse(stored);
+      setStudentId(info.student_id);
+      setStudentName(info.student_name);
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    if (!studentId.trim() || !studentName.trim()) {
+      setError("학번과 이름을 모두 입력해주세요.");
+      return;
+    }
+    localStorage.setItem("student_info", JSON.stringify({ student_id: studentId.trim(), student_name: studentName.trim() }));
+    setIsLoggedIn(true);
+    setError("");
+  }
+
+  function handleLogout() {
+    localStorage.removeItem("student_info");
+    setIsLoggedIn(false);
+    setStudentId("");
+    setStudentName("");
+  }
+
+  if (!isLoggedIn) {
+    return (
+      <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+        <div className="bg-white rounded-2xl border shadow-sm p-8 w-full max-w-sm">
+          <h1 className="text-2xl font-bold text-gray-800 text-center mb-2">정신간호 시뮬레이션</h1>
+          <p className="text-gray-500 text-sm text-center mb-6">시작하려면 학번과 이름을 입력하세요</p>
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">학번</label>
+              <input
+                type="text"
+                value={studentId}
+                onChange={(e) => setStudentId(e.target.value)}
+                placeholder="학번을 입력하세요"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">이름</label>
+              <input
+                type="text"
+                value={studentName}
+                onChange={(e) => setStudentName(e.target.value)}
+                placeholder="이름을 입력하세요"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+              />
+            </div>
+            {error && <p className="text-red-500 text-xs">{error}</p>}
+            <button
+              type="submit"
+              className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+            >
+              시작하기
+            </button>
+          </form>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-gray-50 py-10 px-4">
@@ -54,6 +127,12 @@ export default function Home() {
         <div className="text-center mb-10">
           <h1 className="text-3xl font-bold text-gray-800">정신간호 시뮬레이션</h1>
           <p className="text-gray-500 mt-2">케이스를 선택하여 환자와의 대화를 시작하세요</p>
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <span className="text-sm text-gray-600">{studentName} ({studentId})</span>
+            <button onClick={handleLogout} className="text-xs text-gray-400 hover:text-gray-600 underline">
+              로그아웃
+            </button>
+          </div>
         </div>
 
         <div className="space-y-8">
