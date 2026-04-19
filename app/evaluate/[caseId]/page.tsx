@@ -26,7 +26,10 @@ function EvaluateContent() {
   const caseId = params.caseId as string;
   const caseData = CASES[caseId];
 
-  const messages: Message[] = JSON.parse(searchParams.get("session") || "[]");
+  const sessionKey = searchParams.get("sessionKey") || "";
+  const messages: Message[] = typeof window !== "undefined" && sessionKey
+    ? JSON.parse(localStorage.getItem(sessionKey) || "[]")
+    : JSON.parse(searchParams.get("session") || "[]");
 
   const [mseData, setMseData] = useState<Record<string, string>>({});
   const [evaluationResults, setEvaluationResults] = useState<Record<string, string>>({});

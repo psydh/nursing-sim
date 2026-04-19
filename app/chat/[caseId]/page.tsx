@@ -86,9 +86,9 @@ export default function ChatPage() {
 
   function endSession() {
     setSessionEnded(true);
-    const sessionData = { caseId, messages, timestamp: new Date().toISOString() };
-    localStorage.setItem(`session_${caseId}_${Date.now()}`, JSON.stringify(sessionData));
-    router.push(`/evaluate/${caseId}?session=${encodeURIComponent(JSON.stringify(messages))}`);
+    const sessionKey = `session_${caseId}_${Date.now()}`;
+    localStorage.setItem(sessionKey, JSON.stringify(messages));
+    router.push(`/evaluate/${caseId}?sessionKey=${sessionKey}`);
   }
 
   if (!caseData) return <div className="p-8 text-center text-red-500">케이스를 찾을 수 없습니다.</div>;
