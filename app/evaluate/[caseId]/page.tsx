@@ -35,8 +35,18 @@ function EvaluateContent() {
 
   const [mseData, setMseData] = useState<Record<string, string>>({});
   const [evaluationResults, setEvaluationResults] = useState<Record<string, string>>({});
+  const [scores, setScores] = useState<Record<string, number | null>>({});
   const [loadingEval, setLoadingEval] = useState<Record<string, boolean>>({});
   const [step, setStep] = useState<"mse" | "results">("mse");
+
+  function parseScore(text: string): number | null {
+    const match = text.match(/총점:\s*(\d+)\s*\/\s*10/);
+    return match ? parseInt(match[1]) : null;
+  }
+
+  function stripScore(text: string): string {
+    return text.replace(/\n*총점:\s*\d+\s*\/\s*10\s*$/, "").trim();
+  }
 
   const isMseCase = caseData?.category === "mse";
 
@@ -64,6 +74,9 @@ function EvaluateContent() {
       setEvaluationResults((prev) => ({ ...prev, [type]: (prev[type] || "") + text }));
     }
 
+    const score = parseScore(fullResult);
+    setScores((prev) => ({ ...prev, [type]: score }));
+    setEvaluationResults((prev) => ({ ...prev, [type]: stripScore(prev[type] || "") }));
     setLoadingEval((prev) => ({ ...prev, [type]: false }));
 
     const sessionId = sessionKey ? localStorage.getItem(`${sessionKey}_supabase_id`) : null;
@@ -72,7 +85,8 @@ function EvaluateContent() {
         session_id: sessionId,
         evaluation_type: type,
         mse_content: mseContent || null,
-        result_text: fullResult,
+        result_text: stripScore(fullResult),
+        score,
       });
     }
   }
@@ -154,7 +168,14 @@ function EvaluateContent() {
           <div className="space-y-6">
             {caseData.evaluationTypes.map((type) => (
               <div key={type} className="bg-white rounded-xl border p-6">
-                <h2 className="font-semibold text-gray-800 mb-3">{evalTypeLabel[type] || type}</h2>
+                <div className="flex items-center justify-between mb-3">
+                  <h2 className="font-semibold text-gray-800">{evalTypeLabel[type] || type}</h2>
+                  {scores[type] != null && (
+                    <span className={`text-sm font-bold px-3 py-1 rounded-full ${scores[type]! >= 8 ? "bg-green-100 text-green-700" : scores[type]! >= 6 ? "bg-yellow-100 text-yellow-700" : "bg-red-100 text-red-700"}`}>
+                      {scores[type]}/10
+                    </span>
+                  )}
+                </div>
                 {loadingEval[type] && !evaluationResults[type] && (
                   <div className="text-gray-400 text-sm animate-pulse">평가 중...</div>
                 )}
