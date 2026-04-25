@@ -13,8 +13,18 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "정신간호 시뮬레이션",
-  description: "간호대학생을 위한 정신과 환자 역할극 시뮬레이션",
+  title: "정신간호 시뮬레이션 | 세명대학교 간호학과",
+  description: "AI 환자와의 대화형 임상 실습 — 세명대학교 간호학과 정신간호 시뮬레이션 플랫폼",
+  openGraph: {
+    title: "정신간호 시뮬레이션 | 세명대학교 간호학과",
+    description: "AI 환자와의 대화형 임상 실습 — MSE 사정, 입·퇴원 절차, 정신간호중재",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "정신간호 시뮬레이션 | 세명대학교 간호학과",
+    description: "AI 환자와의 대화형 임상 실습 — MSE 사정, 입·퇴원 절차, 정신간호중재",
+  },
 };
 
 export default function RootLayout({
