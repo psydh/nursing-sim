@@ -176,7 +176,7 @@ export default function ChatPage() {
           onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && sendMessage()}
           placeholder="메시지를 입력하세요..."
           disabled={isLoading || sessionEnded}
-          className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none focus:border-blue-400 disabled:bg-gray-100"
+          className="flex-1 border rounded-full px-4 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-400 disabled:bg-gray-100 disabled:text-gray-400"
         />
         <button
           onClick={sendMessage}
