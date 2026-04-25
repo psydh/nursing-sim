@@ -17,7 +17,7 @@ const CASES = [
   },
   {
     category: "입·퇴원 절차",
-    color: "emerald",
+    color: "teal",
     icon: "📋",
     topics: [
       { id: "admit-1", title: "강제 입원 환자의 권리 보호", desc: "28세 남성, 자살 시도로 강제 입원 후 퇴원을 원하는 환자" },
@@ -27,7 +27,7 @@ const CASES = [
   },
   {
     category: "정신간호중재",
-    color: "violet",
+    color: "indigo",
     icon: "💊",
     topics: [
       { id: "nursing-1", title: "병식 없는 환자의 약물 거부", desc: "42세 남성, 자신이 병이 없다며 약물 복용을 거부하는 조현병 환자" },
@@ -39,21 +39,21 @@ const CASES = [
 ];
 
 const cardAccent: Record<string, string> = {
-  blue: "border-l-blue-400",
-  emerald: "border-l-emerald-400",
-  violet: "border-l-violet-400",
+  blue:   "border-l-[#1a4a96]",
+  teal:   "border-l-teal-500",
+  indigo: "border-l-indigo-500",
 };
 
 const badgeStyle: Record<string, string> = {
-  blue: "bg-blue-50 text-blue-600",
-  emerald: "bg-emerald-50 text-emerald-600",
-  violet: "bg-violet-50 text-violet-600",
+  blue:   "bg-blue-50 text-[#1a4a96]",
+  teal:   "bg-teal-50 text-teal-700",
+  indigo: "bg-indigo-50 text-indigo-700",
 };
 
 const dotColor: Record<string, string> = {
-  blue: "bg-blue-400",
-  emerald: "bg-emerald-400",
-  violet: "bg-violet-400",
+  blue:   "bg-[#1a4a96]",
+  teal:   "bg-teal-500",
+  indigo: "bg-indigo-500",
 };
 
 export default function Home() {
@@ -131,104 +131,128 @@ export default function Home() {
   const totalCases = CASES.reduce((s, c) => s + c.topics.length, 0);
   const doneCount = completedCases.size;
 
+  // ── 로그인 화면 ──────────────────────────────────────────────
   if (!isLoggedIn) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 flex items-center justify-center px-4">
-        <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-blue-500/20 border border-blue-400/30 mb-4">
-              <span className="text-3xl">🏥</span>
-            </div>
-            <h1 className="text-3xl font-bold text-white">정신간호 시뮬레이션</h1>
-            <p className="text-blue-200/70 mt-2 text-sm">AI 환자와의 대화로 임상 역량을 키우세요</p>
-          </div>
+      <main className="min-h-screen bg-[#f0f4fa] flex flex-col">
+        {/* 상단 대학 헤더 */}
+        <div className="bg-[#1a4a96] text-white text-center py-3 px-4">
+          <p className="text-xs tracking-widest opacity-80 uppercase">Semyung University</p>
+          <p className="text-sm font-semibold mt-0.5">세명대학교 간호학과</p>
+        </div>
 
-          <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-8">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-blue-100 mb-1.5">학번</label>
-                <input
-                  type="text"
-                  value={studentId}
-                  onChange={(e) => setStudentId(e.target.value)}
-                  placeholder="학번을 입력하세요"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all"
-                />
+        <div className="flex-1 flex items-center justify-center px-4 py-10">
+          <div className="w-full max-w-sm">
+            {/* 로고 영역 */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#1a4a96] mb-4 shadow-lg">
+                <span className="text-4xl">🏥</span>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-blue-100 mb-1.5">이름</label>
-                <input
-                  type="text"
-                  value={studentName}
-                  onChange={(e) => setStudentName(e.target.value)}
-                  placeholder="이름을 입력하세요"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/30 text-sm focus:outline-none focus:border-blue-400 focus:bg-white/15 transition-all"
-                />
-              </div>
-              {error && <p className="text-red-300 text-xs">{error}</p>}
-              <button
-                type="submit"
-                className="w-full bg-blue-500 hover:bg-blue-400 text-white py-3 rounded-xl font-semibold transition-all mt-2 shadow-lg shadow-blue-500/30"
-              >
-                학습 시작하기
-              </button>
-            </form>
+              <h1 className="text-2xl font-bold text-[#1a4a96]">정신간호 시뮬레이션</h1>
+              <p className="text-gray-500 text-sm mt-1">AI 환자와의 대화형 임상 실습</p>
+            </div>
+
+            {/* 로그인 카드 */}
+            <div className="bg-white rounded-2xl shadow-md p-8 border border-blue-100">
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-600 mb-1.5">학번</label>
+                  <input
+                    type="text"
+                    value={studentId}
+                    onChange={(e) => setStudentId(e.target.value)}
+                    placeholder="학번을 입력하세요"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-300 focus:outline-none focus:border-[#1a4a96] focus:ring-2 focus:ring-[#1a4a96]/10 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-600 mb-1.5">이름</label>
+                  <input
+                    type="text"
+                    value={studentName}
+                    onChange={(e) => setStudentName(e.target.value)}
+                    placeholder="이름을 입력하세요"
+                    className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-800 placeholder:text-gray-300 focus:outline-none focus:border-[#1a4a96] focus:ring-2 focus:ring-[#1a4a96]/10 transition-all"
+                  />
+                </div>
+                {error && <p className="text-red-500 text-xs">{error}</p>}
+                <button
+                  type="submit"
+                  className="w-full bg-[#1a4a96] hover:bg-[#153d80] text-white py-3 rounded-xl font-semibold transition-colors mt-2 shadow-sm"
+                >
+                  학습 시작하기
+                </button>
+              </form>
+            </div>
+
+            <p className="text-center text-xs text-gray-400 mt-6">
+              세명대학교 간호학과 임상실습 지원 시스템
+            </p>
           </div>
         </div>
       </main>
     );
   }
 
+  // ── 메인 화면 ──────────────────────────────────────────────
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-[#f0f4fa]">
       {/* 상단 헤더 */}
-      <header className="bg-white border-b sticky top-0 z-10">
+      <header className="bg-[#1a4a96] text-white sticky top-0 z-10 shadow-md">
         <div className="max-w-4xl mx-auto px-4 h-14 flex items-center justify-between">
-          <span className="font-bold text-gray-800 flex items-center gap-2">
-            <span>🏥</span> 정신간호 시뮬레이션
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-lg">🏥</span>
+            <div>
+              <p className="text-xs opacity-70 leading-none">세명대학교 간호학과</p>
+              <p className="text-sm font-bold leading-tight">정신간호 시뮬레이션</p>
+            </div>
+          </div>
           <div className="flex items-center gap-4">
             <button
               onClick={() => router.push("/history")}
-              className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+              className="text-sm text-blue-200 hover:text-white font-medium transition-colors"
             >
               내 학습 기록
             </button>
-            <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-xs font-bold text-blue-600">
+            <div className="flex items-center gap-2 border-l border-white/20 pl-4">
+              <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-xs font-bold">
                 {studentName[0]}
               </div>
-              <span className="text-sm text-gray-700 hidden sm:block">{studentName}</span>
+              <span className="text-sm hidden sm:block">{studentName}</span>
+              <button onClick={handleLogout} className="text-xs text-blue-200 hover:text-white ml-1 transition-colors">
+                로그아웃
+              </button>
             </div>
-            <button onClick={handleLogout} className="text-xs text-gray-400 hover:text-gray-600">
-              로그아웃
-            </button>
           </div>
         </div>
       </header>
 
       <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* 진행 현황 배너 */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 mb-8 text-white">
+        {/* 진행 현황 카드 */}
+        <div className="bg-white rounded-2xl shadow-sm border border-blue-100 p-6 mb-8">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <p className="text-blue-100 text-sm">안녕하세요, {studentName} 학생</p>
-              <p className="text-xl font-bold mt-0.5">
-                {doneCount === 0
-                  ? "첫 번째 케이스를 시작해보세요"
-                  : `${doneCount}개 케이스를 완료했어요`}
+              <p className="text-gray-500 text-sm">안녕하세요, <span className="font-semibold text-gray-800">{studentName}</span> 학생</p>
+              <p className="text-[#1a4a96] font-bold text-lg mt-0.5">
+                {doneCount === 0 ? "첫 번째 케이스를 시작해보세요" : `${doneCount}개 케이스를 완료했어요`}
               </p>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold">{doneCount}<span className="text-lg text-blue-200">/{totalCases}</span></p>
-              <p className="text-blue-200 text-xs mt-0.5">완료</p>
+              <p className="text-3xl font-bold text-[#1a4a96]">
+                {doneCount}<span className="text-lg text-gray-300">/{totalCases}</span>
+              </p>
+              <p className="text-gray-400 text-xs mt-0.5">완료</p>
             </div>
           </div>
-          <div className="w-full bg-white/20 rounded-full h-2">
+          <div className="w-full bg-gray-100 rounded-full h-2.5">
             <div
-              className="bg-white rounded-full h-2 transition-all duration-500"
+              className="bg-[#1a4a96] rounded-full h-2.5 transition-all duration-500"
               style={{ width: `${(doneCount / totalCases) * 100}%` }}
             />
+          </div>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-xs text-gray-400">진행률 {Math.round((doneCount / totalCases) * 100)}%</span>
+            <span className="text-xs text-gray-400">전체 {totalCases}개</span>
           </div>
         </div>
 
@@ -239,8 +263,8 @@ export default function Home() {
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">{section.icon}</span>
                 <h2 className="font-bold text-gray-800">{section.category}</h2>
-                <span className={`text-xs font-medium px-2 py-0.5 rounded-full ${badgeStyle[section.color]}`}>
-                  {section.topics.filter((t) => completedCases.has(t.id)).length}/{section.topics.length}
+                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeStyle[section.color]}`}>
+                  {section.topics.filter((t) => completedCases.has(t.id)).length}/{section.topics.length} 완료
                 </span>
               </div>
 
@@ -252,23 +276,23 @@ export default function Home() {
                     <button
                       key={topic.id}
                       onClick={() => router.push(`/chat/${topic.id}`)}
-                      className={`text-left bg-white rounded-xl border-l-4 ${cardAccent[section.color]} border border-gray-100 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 group`}
+                      className={`text-left bg-white rounded-xl border-l-4 ${cardAccent[section.color]} border border-gray-100 p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 group shadow-sm`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
+                          <div className="flex items-center gap-1.5 mb-1.5">
                             <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor[section.color]}`} />
                             <span className="text-xs text-gray-400">케이스 {i + 1}</span>
                           </div>
-                          <p className="font-semibold text-gray-800 text-sm leading-snug group-hover:text-blue-600 transition-colors">
+                          <p className="font-semibold text-gray-800 text-sm leading-snug group-hover:text-[#1a4a96] transition-colors">
                             {topic.title}
                           </p>
                           <p className="text-xs text-gray-400 mt-1.5 leading-relaxed">{topic.desc}</p>
                         </div>
-                        <div className="shrink-0 flex flex-col items-end gap-1">
+                        <div className="shrink-0 flex flex-col items-end gap-1.5 ml-2">
                           {done ? (
                             <>
-                              <span className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs">✓</span>
+                              <span className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs font-bold">✓</span>
                               {score != null && (
                                 <span className={`text-xs font-bold px-1.5 py-0.5 rounded ${score >= 8 ? "bg-green-50 text-green-600" : score >= 6 ? "bg-yellow-50 text-yellow-600" : "bg-red-50 text-red-500"}`}>
                                   {score}/10
@@ -276,7 +300,7 @@ export default function Home() {
                               )}
                             </>
                           ) : (
-                            <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-300 text-xs group-hover:bg-blue-50 group-hover:text-blue-400 transition-colors">›</span>
+                            <span className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-gray-300 text-sm group-hover:bg-[#1a4a96]/10 group-hover:text-[#1a4a96] transition-colors">›</span>
                           )}
                         </div>
                       </div>
@@ -287,6 +311,10 @@ export default function Home() {
             </div>
           ))}
         </div>
+
+        <p className="text-center text-xs text-gray-400 mt-10">
+          세명대학교 간호학과 임상실습 지원 시스템
+        </p>
       </div>
     </main>
   );
