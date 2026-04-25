@@ -129,6 +129,9 @@ export default function Home() {
           <p className="text-gray-500 mt-2">케이스를 선택하여 환자와의 대화를 시작하세요</p>
           <div className="mt-3 flex items-center justify-center gap-3">
             <span className="text-sm text-gray-600">{studentName} ({studentId})</span>
+            <button onClick={() => router.push("/history")} className="text-xs text-blue-500 hover:text-blue-700 underline">
+              내 학습 기록
+            </button>
             <button onClick={handleLogout} className="text-xs text-gray-400 hover:text-gray-600 underline">
               로그아웃
             </button>
