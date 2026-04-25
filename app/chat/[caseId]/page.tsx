@@ -21,6 +21,7 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [sessionEnded, setSessionEnded] = useState(false);
   const [error, setError] = useState("");
+  const [timeLeft, setTimeLeft] = useState(600);
   const startedAt = useRef<string>(new Date().toISOString());
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -29,11 +30,22 @@ export default function ChatPage() {
   }, [messages]);
 
   useEffect(() => {
-    // 세션 시작 시 환자 첫 인사
     startSession();
   }, []);
 
-  async function streamResponse(msgs: Message[]) {
+  useEffect(() => {
+    if (sessionEnded) return;
+    if (timeLeft <= 0) {
+      endSession();
+      return;
+    }
+    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [timeLeft, sessionEnded]);
+
+  const INIT_TRIGGER: Message = { role: "user", content: "안녕하세요. 저는 간호학생입니다." };
+
+  async function streamToLast(msgs: Message[]) {
     try {
       const res = await fetch("/api/chat", {
         method: "POST",
@@ -46,8 +58,6 @@ export default function ChatPage() {
       const reader = res.body!.getReader();
       const decoder = new TextDecoder();
       let assistantMsg = "";
-
-      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
       while (true) {
         const { done, value } = await reader.read();
@@ -69,9 +79,8 @@ export default function ChatPage() {
   async function startSession() {
     setIsLoading(true);
     setError("");
-    const initMessages: Message[] = [{ role: "user", content: "안녕하세요. 저는 간호학생입니다." }];
-    setMessages(initMessages);
-    await streamResponse(initMessages);
+    setMessages([{ role: "assistant", content: "" }]);
+    await streamToLast([INIT_TRIGGER]);
   }
 
   async function sendMessage() {
@@ -79,11 +88,11 @@ export default function ChatPage() {
 
     const userMsg: Message = { role: "user", content: input };
     const updatedMessages = [...messages, userMsg];
-    setMessages(updatedMessages);
+    setMessages([...updatedMessages, { role: "assistant", content: "" }]);
     setInput("");
     setIsLoading(true);
     setError("");
-    await streamResponse(updatedMessages);
+    await streamToLast([INIT_TRIGGER, ...updatedMessages]);
   }
 
   async function endSession() {
@@ -119,10 +128,15 @@ export default function ChatPage() {
         <button onClick={() => router.push("/")} className="text-gray-500 hover:text-gray-800 text-sm">
           ← 케이스 목록
         </button>
-        <h1 className="font-semibold text-gray-800 text-sm text-center flex-1 mx-4">{caseData.title}</h1>
+        <div className="flex flex-col items-center flex-1 mx-4">
+          <h1 className="font-semibold text-gray-800 text-sm">{caseData.title}</h1>
+          <span className={`text-sm font-mono font-bold mt-0.5 ${timeLeft <= 60 ? "text-red-500" : timeLeft <= 180 ? "text-orange-500" : "text-[#1a4a96]"}`}>
+            {String(Math.floor(timeLeft / 60)).padStart(2, "0")}:{String(timeLeft % 60).padStart(2, "0")}
+          </span>
+        </div>
         <button
           onClick={endSession}
-          disabled={messages.length < 3}
+          disabled={messages.length < 2}
           className="bg-red-500 text-white text-sm px-3 py-1.5 rounded-lg hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed"
         >
           대화 종료

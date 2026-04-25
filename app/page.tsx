@@ -128,8 +128,10 @@ export default function Home() {
     setAvgScores({});
   }
 
-  const totalCases = CASES.reduce((s, c) => s + c.topics.length, 0);
-  const doneCount = completedCases.size;
+  const totalCases = CASES.length;
+  const doneCount = CASES.filter((section) =>
+    section.topics.some((t) => completedCases.has(t.id))
+  ).length;
 
   // ── 로그인 화면 ──────────────────────────────────────────────
   if (!isLoggedIn) {
@@ -138,18 +140,18 @@ export default function Home() {
         {/* 상단 대학 헤더 */}
         <div className="bg-[#1a4a96] text-white text-center py-3 px-4">
           <p className="text-xs tracking-widest opacity-80 uppercase">Semyung University</p>
-          <p className="text-sm font-semibold mt-0.5">세명대학교 간호학과</p>
+          <p className="text-xl font-bold mt-0.5">세명대학교 간호학과</p>
         </div>
 
         <div className="flex-1 flex items-center justify-center px-4 py-10">
           <div className="w-full max-w-sm">
             {/* 로고 영역 */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-[#1a4a96] mb-4 shadow-lg">
-                <span className="text-4xl">🏥</span>
+              <div className="mb-4 rounded-2xl overflow-hidden shadow-lg">
+                <img src="/smu_nursing_photo.png" alt="세명대학교 간호학과" className="w-full object-cover" />
               </div>
-              <h1 className="text-2xl font-bold text-[#1a4a96]">정신간호 시뮬레이션</h1>
-              <p className="text-gray-500 text-sm mt-1">AI 환자와의 대화형 임상 실습</p>
+              <h1 className="text-2xl font-bold text-[#1a4a96]">통합시뮬레이션실습II 사전과제<br />(정신간호학 시나리오)</h1>
+              <p className="text-gray-500 text-sm mt-1">AI환자와 대화형 사전학습</p>
             </div>
 
             {/* 로그인 카드 */}
@@ -186,7 +188,10 @@ export default function Home() {
             </div>
 
             <p className="text-center text-xs text-gray-400 mt-6">
-              세명대학교 간호학과 임상실습 지원 시스템
+              @The PRISM Lab. SINCE 2026
+            </p>
+            <p className="text-center text-xs text-gray-400 mt-1">
+              Developed by Elena Cho
             </p>
           </div>
         </div>
@@ -204,7 +209,7 @@ export default function Home() {
             <span className="text-lg">🏥</span>
             <div>
               <p className="text-xs opacity-70 leading-none">세명대학교 간호학과</p>
-              <p className="text-sm font-bold leading-tight">정신간호 시뮬레이션</p>
+              <p className="text-sm font-bold leading-tight">통합시뮬레이션실습II 사전과제(정신간호)</p>
             </div>
           </div>
           <div className="flex items-center gap-4">
@@ -263,9 +268,11 @@ export default function Home() {
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">{section.icon}</span>
                 <h2 className="font-bold text-gray-800">{section.category}</h2>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeStyle[section.color]}`}>
-                  {section.topics.filter((t) => completedCases.has(t.id)).length}/{section.topics.length} 완료
-                </span>
+                {section.topics.some((t) => completedCases.has(t.id)) ? (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-600">완료</span>
+                ) : (
+                  <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badgeStyle[section.color]}`}>미완료</span>
+                )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -313,7 +320,10 @@ export default function Home() {
         </div>
 
         <p className="text-center text-xs text-gray-400 mt-10">
-          세명대학교 간호학과 임상실습 지원 시스템
+          @The PRISM Lab. SINCE 2026
+        </p>
+        <p className="text-center text-xs text-gray-400 mt-1">
+          Developed by Elena Cho
         </p>
       </div>
     </main>
